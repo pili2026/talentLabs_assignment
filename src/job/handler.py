@@ -31,15 +31,15 @@ async def get_job(request, job_id: UUID):
 
 @job_router.put("/{job_id}", response=JobResponse, summary="Update job by ID")
 async def update_job(request, job_id: UUID, payload: JobUpdate):
-    updated = await job_service.update_job(job_id, payload)
-    if not updated:
+    updated_job = await job_service.update_job(job_id, payload)
+    if not updated_job:
         raise HttpError(404, f"Job {job_id} not found")
-    return updated
+    return updated_job
 
 
 @job_router.delete("/{job_id}", response={204: None}, summary="Delete job by ID")
 async def delete_job(request, job_id: UUID):
-    success = await job_service.delete_job(job_id)
-    if not success:
+    result = await job_service.delete_job(job_id)
+    if not result:
         raise HttpError(404, f"Job {job_id} not found")
     return 204, None

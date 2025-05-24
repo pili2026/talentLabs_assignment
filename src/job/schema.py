@@ -3,6 +3,7 @@ from datetime import date
 from typing import Union
 
 from ninja import Schema
+from pydantic import ConfigDict
 
 from .enum_type import JobStatusEnum
 
@@ -35,5 +36,4 @@ class JobResponse(JobBase):
     id: uuid.UUID
     company_name: str
 
-    class Config:
-        orm_mode = True
+    model_config = ConfigDict(from_attributes=True)

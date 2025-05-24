@@ -8,29 +8,21 @@ class JobService:
     def __init__(self, job_repository: JobRepository):
         self.job_repository = job_repository
 
-    async def create_job(self, payload: JobCreate) -> JobResponse:
-        job = await self.job_repository.create(payload.dict())
-        return JobResponse.from_orm(job)
+    async def create_job(self, create_job: JobCreate) -> JobResponse:
+        created_job: JobResponse = await self.job_repository.create(create_job)
+        return created_job
 
     async def get_job(self, job_id: UUID) -> JobResponse | None:
-        job = await self.job_repository.get_by_id(job_id)
+        job: JobResponse | None = await self.job_repository.get_by_id(job_id)
         return JobResponse.from_orm(job) if job else None
 
     async def get_all_job(self) -> list[JobResponse]:
-        job_list = await self.job_repository.get_all()
+        job_list: list[JobResponse] = await self.job_repository.get_all()
         return [JobResponse.from_orm(job) for job in job_list]
 
-    async def update_job(self, job_id: UUID, payload: JobUpdate) -> JobResponse | None:
-        job = await self.job_repository.get_by_id(job_id)
-        if not job:
-            return None
-
-        updated = await self.job_repository.update(job, payload.dict())
-        return JobResponse.from_orm(updated)
+    async def update_job(self, job_id: UUID, update_job: JobUpdate) -> JobResponse:
+        updated: JobResponse = await self.job_repository.update(job_id, update_job)
+        return updated
 
     async def delete_job(self, job_id: UUID) -> bool:
-        job = await self.job_repository.get_by_id(job_id)
-        if not job:
-            return False
-        await self.job_repository.delete(job)
-        return True
+        return await self.job_repository.delete(job_id)

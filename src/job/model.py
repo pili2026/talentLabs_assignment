@@ -2,10 +2,12 @@ import uuid
 
 from django.db import models
 
+from job.schema import JobResponse
+
 from .enum_type import JobStatusEnum
 
 
-class JobPostDBModel(models.Model):
+class JobDBModel(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     title = models.CharField(max_length=255)
     description = models.TextField()
@@ -23,6 +25,20 @@ class JobPostDBModel(models.Model):
 
     def __str__(self):
         return f"{self.title} @ {self.company_name}"
+
+    def to_service_model(self) -> JobResponse:
+        return JobResponse(
+            id=self.id,
+            title=self.title,
+            description=self.description,
+            location=self.location,
+            salary_range=self.salary_range,
+            company_name=self.company_name,
+            posting_date=self.posting_date,
+            expiration_date=self.expiration_date,
+            required_skills=self.required_skills,
+            status=JobStatusEnum(self.status),
+        )
 
     class Meta:
         db_table = "job_post"
