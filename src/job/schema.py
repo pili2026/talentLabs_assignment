@@ -1,3 +1,4 @@
+import uuid
 from datetime import date
 from typing import Union
 
@@ -31,7 +32,7 @@ class JobUpdate(JobBase):
 
 
 class JobResponse(JobBase):
-    id: int
+    id: uuid.UUID
     company_name: str
 
     class Config:

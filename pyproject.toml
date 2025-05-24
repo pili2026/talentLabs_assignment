@@ -1,0 +1,10 @@
+[tool.ruff]
+line-length = 120
+exclude = ["migrations", "venv", "__pycache__"]
+target-version = "py312"
+
+[tool.ruff.lint]
+extend-select = ["E", "W", "F", "I"]
+
+[tool.ruff.lint.isort]
+known-first-party = ["job"]
