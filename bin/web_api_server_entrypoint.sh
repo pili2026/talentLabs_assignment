@@ -1,17 +1,17 @@
 #!/bin/bash
 set -e
 
-echo "📡 Waiting for PostgreSQL ($DB_HOST:$DB_PORT)..."
+echo "Waiting for PostgreSQL ($DB_HOST:$DB_PORT)..."
 until pg_isready -h "$DB_HOST" -p "$DB_PORT" -U "$DB_USER"; do
   sleep 1
 done
-echo "✅ PostgreSQL is ready"
+echo "PostgreSQL is ready"
 
-echo "📦 Running migrations..."
+echo "Running migrations..."
 python manage.py migrate
 
-echo "🌱 Seeding database..."
+echo "Seeding database..."
 python manage.py seed
 
-echo "🚀 Starting Django server..."
+echo "Starting Django server..."
 python manage.py runserver 0.0.0.0:8000

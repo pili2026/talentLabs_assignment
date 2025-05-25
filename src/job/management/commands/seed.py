@@ -4,6 +4,7 @@ from uuid import uuid4
 
 from django.contrib.auth.models import User
 from django.core.management.base import BaseCommand
+from ninja_jwt.tokens import RefreshToken
 
 from job.model import JobDBModel, JobStatusEnum
 
@@ -13,8 +14,19 @@ class Command(BaseCommand):
 
     def handle(self, *args, **kwargs):
         if not User.objects.filter(username="admin").exists():
-            User.objects.create_superuser(username="admin", password="admin123", email="admin@example.com")
+            admin_user = User.objects.create_superuser(username="admin", password="admin123", email="admin@example.com")
             self.stdout.write(self.style.SUCCESS("Created admin user"))
+        else:
+            admin_user = User.objects.get(username="admin")
+            self.stdout.write(self.style.WARNING("Admin user already exists"))
+
+        refresh = RefreshToken.for_user(admin_user)
+        access_token = str(refresh.access_token)
+        self.stdout.write(self.style.NOTICE(f"Access Token:\n{access_token}"))
+        self.stdout.write(self.style.NOTICE("Example curl test:"))
+        self.stdout.write(
+            self.style.NOTICE(f'curl -H "Authorization: Bearer {access_token}" http://localhost:8000/api/job/')
+        )
 
         if JobDBModel.objects.count() == 0:
             job_titles = [
@@ -86,6 +98,7 @@ class Command(BaseCommand):
                     status=random.choice(list(JobStatusEnum)),
                     company_name=random.choice(companies),
                 )
+
             self.stdout.write(self.style.SUCCESS("Seeded 10 job records"))
         else:
             self.stdout.write(self.style.WARNING("Jobs already exist, skipping."))
