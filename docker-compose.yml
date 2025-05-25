@@ -1,5 +1,28 @@
 services:
 
+  web:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: talentlabs_web
+    volumes:
+      - .:/app
+    ports:
+      - "8000:8000"
+    depends_on:
+      timescaledb:
+        condition: service_healthy
+    environment:
+      CONFIG_YAML: config.docker.yml
+      DB_HOST: timescaledb
+      DB_PORT: 5432
+      DB_USER: admin
+      DB_PASSWORD: admin
+      DB_NAME: talentlabs
+      DATABASE_URL: postgres://admin:admin@timescaledb:5432/talentlabs
+    networks:
+      - talentlabs_network
+
   timescaledb:
     container_name: talentlabs_timescaledb
     image: timescale/timescaledb:2.19.2-pg15
