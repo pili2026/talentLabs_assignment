@@ -10,9 +10,9 @@ job_router = Router()
 
 
 @job_router.post("/", response=JobResponse, summary="Create a new job")
-async def create_job(request, payload: JobCreate):
+async def create_job(request, create_job_schema: JobCreate):
     job_service: JobService = request.job_service
-    return await job_service.create_job(payload)
+    return await job_service.create_job(create_job_schema)
 
 
 @job_router.get("/", response=list[JobResponse], summary="List all jobs")
@@ -29,9 +29,9 @@ async def get_job(request, job_id: UUID):
 
 
 @job_router.put("/{job_id}", response=JobResponse, summary="Update job by ID")
-async def update_job(request, job_id: UUID, payload: JobUpdate):
+async def update_job(request, job_id: UUID, update_job_schema: JobUpdate):
     job_service: JobService = request.job_service
-    updated_job = await job_service.update_job(job_id, payload)
+    updated_job = await job_service.update_job(job_id, update_job_schema)
     return updated_job
 
 
