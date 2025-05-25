@@ -48,6 +48,7 @@ INSTALLED_APPS = [
     "django.contrib.messages",
     "django.contrib.staticfiles",
     "job",
+    "corsheaders",
     "ninja_extra",
     "ninja_jwt",
 ]
@@ -66,7 +67,11 @@ MIDDLEWARE = [
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
     "job.middleware.JobServiceMiddleware",
+    "corsheaders.middleware.CorsMiddleware",
 ]
+
+# CORS settings for development
+CORS_ALLOW_ALL_ORIGINS = True
 
 ROOT_URLCONF = "job_platform.urls"
 
