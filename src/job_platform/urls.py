@@ -16,12 +16,21 @@ Including another URLconf
 """
 
 from django.contrib import admin
+from django.http import JsonResponse
 from django.urls import path
 from ninja import NinjaAPI
 
+from job.exception import NotFoundException
 from job.handler import job_router
 
 api = NinjaAPI()
+
+
+@api.exception_handler(NotFoundException)
+def not_found_handler(request, exc: NotFoundException):
+    return JsonResponse({"detail": str(exc)}, status=404)
+
+
 api.add_router("/job", job_router)
 
 urlpatterns = [path("admin/", admin.site.urls), path("api/", api.urls)]

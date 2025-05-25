@@ -4,7 +4,7 @@ from uuid import UUID
 from asgiref.sync import sync_to_async
 from django.db.models.manager import Manager
 
-from job.exception import NotFoundError
+from job.exception import NotFoundException
 from job.schema import JobCreate, JobResponse, JobUpdate
 
 from .model import JobDBModel
@@ -44,5 +44,5 @@ class JobRepository:
     async def _get_or_raise(self, job_id: UUID) -> JobDBModel:
         job = await sync_to_async(lambda: self.objects.filter(id=job_id).first())()
         if job is None:
-            raise NotFoundError(f"Job with id {job_id} not found")
+            raise NotFoundException(f"Job with id {job_id} not found")
         return job

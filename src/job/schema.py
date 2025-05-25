@@ -1,6 +1,6 @@
-import uuid
 from datetime import date
 from typing import Union
+from uuid import UUID
 
 from ninja import Schema
 from pydantic import ConfigDict
@@ -33,7 +33,7 @@ class JobUpdate(JobBase):
 
 
 class JobResponse(JobBase):
-    id: uuid.UUID
+    id: UUID
     company_name: str
 
     model_config = ConfigDict(from_attributes=True)

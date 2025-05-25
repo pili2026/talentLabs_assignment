@@ -1,4 +1,4 @@
-class NotFoundError(Exception):
+class NotFoundException(Exception):
     """Raised when an entity is not found in the database."""
 
     def __init__(self, message: str):
@@ -6,4 +6,4 @@ class NotFoundError(Exception):
         self.message = message
 
     def __str__(self):
-        return f"NotFoundError: {self.message}"
+        return f"NotFoundException: {self.message}"

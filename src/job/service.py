@@ -12,9 +12,9 @@ class JobService:
         created_job: JobResponse = await self.job_repository.create(create_job)
         return created_job
 
-    async def get_job(self, job_id: UUID) -> JobResponse | None:
-        job: JobResponse | None = await self.job_repository.get_by_id(job_id)
-        return JobResponse.from_orm(job) if job else None
+    async def get_job(self, job_id: UUID) -> JobResponse:
+        job: JobResponse = await self.job_repository.get_by_id(job_id)
+        return job
 
     async def get_all_job(self) -> list[JobResponse]:
         job_list: list[JobResponse] = await self.job_repository.get_all()

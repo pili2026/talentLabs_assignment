@@ -4,7 +4,23 @@ from uuid import UUID, uuid4
 import pytest
 
 from job.enum_type import JobStatusEnum
-from job.schema import JobCreate
+from job.schema import JobCreate, JobResponse
+
+
+@pytest.fixture
+def fake_job_response(existing_job_uuid) -> JobResponse:
+    return JobResponse(
+        id=existing_job_uuid,
+        title="Engineer",
+        description="Build APIs",
+        location="Taipei",
+        salary_range="80k-100k",
+        company_name="Test Co",
+        posting_date=date(2024, 1, 1),
+        expiration_date=date(2024, 12, 31),
+        required_skills=["Python", "Django"],
+        status=JobStatusEnum.ACTIVE,
+    )
 
 
 @pytest.fixture
@@ -23,7 +39,7 @@ def stub_job_create_data() -> JobCreate:
 
 
 @pytest.fixture
-def stub_job_update_data() -> JobCreate:
+def fake_job_update_data() -> JobCreate:
     return JobCreate(
         title="Updated Title",
         description="Updated Description",
@@ -38,7 +54,7 @@ def stub_job_update_data() -> JobCreate:
 
 
 @pytest.fixture
-def stub_missing_field_data() -> dict:
+def fake_missing_field_data() -> dict:
     return {
         "description": "Missing title",
         "location": "Taipei",
@@ -49,6 +65,11 @@ def stub_missing_field_data() -> dict:
         "required_skills": ["Python", "Django"],
         "status": JobStatusEnum.ACTIVE,
     }
+
+
+@pytest.fixture
+def existing_job_uuid() -> UUID:
+    return UUID("00000000-0000-0000-0000-000000000001")
 
 
 @pytest.fixture
