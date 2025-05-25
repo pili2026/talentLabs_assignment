@@ -9,18 +9,20 @@ from job.schema import JobCreate, JobUpdate
 
 
 @pytest.mark.asyncio
-async def test_positive_create_job_api(mocker, fake_job_response):
+async def test_positive_create_job_api(mocker, fake_job_response, mock_auth_user):
     # Mock
     mocker.patch("job.repository.JobRepository.create", return_value=fake_job_response)
 
     app = get_asgi_application()
     transport = ASGITransport(app=app)
 
-    # Act
-    async with AsyncClient(transport=transport, base_url="http://test") as client:
-        payload = JobCreate(**fake_job_response.model_dump()).model_dump(mode="json")
+    # Arrange
+    request_body = JobCreate(**fake_job_response.model_dump()).model_dump(mode="json")
+    headers = {"Authorization": "Bearer faketoken"}
 
-        response = await client.post("/api/job/", json=payload)
+    # Act
+    async with AsyncClient(transport=transport, base_url="http://test", headers=headers) as client:
+        response = await client.post("/api/job/", json=request_body)
 
     # Assert
     assert response.status_code == 200
@@ -28,15 +30,18 @@ async def test_positive_create_job_api(mocker, fake_job_response):
 
 
 @pytest.mark.asyncio
-async def test_positive_get_job_by_id_api(mocker, fake_job_response):
+async def test_positive_get_job_by_id_api(mocker, fake_job_response, mock_auth_user):
     # Mock
     mocker.patch("job.repository.JobRepository.get_by_id", return_value=fake_job_response)
 
     app = get_asgi_application()
     transport = ASGITransport(app=app)
 
+    # Arrange
+    headers = {"Authorization": "Bearer faketoken"}
+
     # Act
-    async with AsyncClient(transport=transport, base_url="http://test") as client:
+    async with AsyncClient(transport=transport, base_url="http://test", headers=headers) as client:
         response = await client.get(f"/api/job/{fake_job_response.id}")
 
     # Assert
@@ -45,15 +50,18 @@ async def test_positive_get_job_by_id_api(mocker, fake_job_response):
 
 
 @pytest.mark.asyncio
-async def test_positive_list_all_jobs_api(mocker, fake_job_response):
+async def test_positive_list_all_jobs_api(mocker, fake_job_response, mock_auth_user):
     # Mock
     mocker.patch("job.repository.JobRepository.get_all", return_value=[fake_job_response])
 
     app = get_asgi_application()
     transport = ASGITransport(app=app)
 
+    # Arrange
+    headers = {"Authorization": "Bearer faketoken"}
+
     # Act
-    async with AsyncClient(transport=transport, base_url="http://test") as client:
+    async with AsyncClient(transport=transport, base_url="http://test", headers=headers) as client:
         response = await client.get("/api/job/")
 
     # Assert
@@ -63,18 +71,20 @@ async def test_positive_list_all_jobs_api(mocker, fake_job_response):
 
 
 @pytest.mark.asyncio
-async def test_positive_update_job_api(mocker, fake_job_response):
+async def test_positive_update_job_api(mocker, fake_job_response, mock_auth_user):
     # Mock
     mocker.patch("job.repository.JobRepository.update", return_value=fake_job_response)
 
     app = get_asgi_application()
     transport = ASGITransport(app=app)
 
-    # Act
-    async with AsyncClient(transport=transport, base_url="http://test") as client:
-        payload = JobUpdate(**fake_job_response.model_dump()).model_dump(mode="json")
+    # Arrange
+    headers = {"Authorization": "Bearer faketoken"}
+    request_body = JobUpdate(**fake_job_response.model_dump()).model_dump(mode="json")
 
-        response = await client.put(f"/api/job/{fake_job_response.id}", json=payload)
+    # Act
+    async with AsyncClient(transport=transport, base_url="http://test", headers=headers) as client:
+        response = await client.put(f"/api/job/{fake_job_response.id}", json=request_body)
 
     # Assert
     assert response.status_code == 200
@@ -82,15 +92,18 @@ async def test_positive_update_job_api(mocker, fake_job_response):
 
 
 @pytest.mark.asyncio
-async def test_positive_delete_job_api(mocker, fake_job_response):
+async def test_positive_delete_job_api(mocker, fake_job_response, mock_auth_user):
     # Mock
     mocker.patch("job.repository.JobRepository.delete", return_value=True)
 
     app = get_asgi_application()
     transport = ASGITransport(app=app)
 
+    # Arrange
+    headers = {"Authorization": "Bearer faketoken"}
+
     # Act
-    async with AsyncClient(transport=transport, base_url="http://test") as client:
+    async with AsyncClient(transport=transport, base_url="http://test", headers=headers) as client:
         response = await client.delete(f"/api/job/{fake_job_response.id}")
 
     # Assert
@@ -98,13 +111,16 @@ async def test_positive_delete_job_api(mocker, fake_job_response):
 
 
 @pytest.mark.asyncio
-async def test_negative_create_job_when_missing_fields():
+async def test_negative_create_job_when_missing_fields(mock_auth_user):
     # Mock
     app = get_asgi_application()
     transport = ASGITransport(app=app)
 
+    # Arrange
+    headers = {"Authorization": "Bearer faketoken"}
+
     # Act
-    async with AsyncClient(transport=transport, base_url="http://test") as client:
+    async with AsyncClient(transport=transport, base_url="http://test", headers=headers) as client:
         response = await client.post(
             "/api/job/",
             json={"title": "Engineer"},
@@ -116,13 +132,16 @@ async def test_negative_create_job_when_missing_fields():
 
 
 @pytest.mark.asyncio
-async def test_negative_create_job_when_invalid_enum():
+async def test_negative_create_job_when_invalid_enum(mock_auth_user):
     # Mock
     app = get_asgi_application()
     transport = ASGITransport(app=app)
 
+    # Arrange
+    headers = {"Authorization": "Bearer faketoken"}
+
     # Act
-    async with AsyncClient(transport=transport, base_url="http://test") as client:
+    async with AsyncClient(transport=transport, base_url="http://test", headers=headers) as client:
         response = await client.post(
             "/api/job/",
             json={
@@ -144,15 +163,18 @@ async def test_negative_create_job_when_invalid_enum():
 
 
 @pytest.mark.asyncio
-async def test_negative_get_job_when_not_found(mocker):
+async def test_negative_get_job_when_not_found(mocker, mock_auth_user):
     # Mock
     mocker.patch("job.repository.JobRepository.get_by_id", side_effect=NotFoundException("Not found"))
 
     app = get_asgi_application()
     transport = ASGITransport(app=app)
 
+    # Arrange
+    headers = {"Authorization": "Bearer faketoken"}
+
     # Act
-    async with AsyncClient(transport=transport, base_url="http://test") as client:
+    async with AsyncClient(transport=transport, base_url="http://test", headers=headers) as client:
         response = await client.get(f"/api/job/{uuid4()}")
 
     # Assert
@@ -160,32 +182,38 @@ async def test_negative_get_job_when_not_found(mocker):
 
 
 @pytest.mark.asyncio
-async def test_negative_update_job_when_not_found(mocker, fake_job_response):
+async def test_negative_update_job_when_not_found(mocker, fake_job_response, mock_auth_user):
     # Mock
     mocker.patch("job.repository.JobRepository.update", side_effect=NotFoundException("Not found"))
 
     app = get_asgi_application()
     transport = ASGITransport(app=app)
 
+    # Arrange
+    headers = {"Authorization": "Bearer faketoken"}
+    request_body = JobUpdate(**fake_job_response.model_dump()).model_dump(mode="json")
+
     # Act
-    async with AsyncClient(transport=transport, base_url="http://test") as client:
-        payload = JobUpdate(**fake_job_response.model_dump()).model_dump(mode="json")
-        response = await client.put(f"/api/job/{uuid4()}", json=payload)
+    async with AsyncClient(transport=transport, base_url="http://test", headers=headers) as client:
+        response = await client.put(f"/api/job/{uuid4()}", json=request_body)
 
     # Assert
     assert response.status_code == 404
 
 
 @pytest.mark.asyncio
-async def test_negative_delete_job_when_not_found(mocker):
+async def test_negative_delete_job_when_not_found(mocker, mock_auth_user):
     # Mock
     mocker.patch("job.repository.JobRepository.delete", return_value=False)
 
     app = get_asgi_application()
     transport = ASGITransport(app=app)
 
+    # Arrange
+    headers = {"Authorization": "Bearer faketoken"}
+
     # Act
-    async with AsyncClient(transport=transport, base_url="http://test") as client:
+    async with AsyncClient(transport=transport, base_url="http://test", headers=headers) as client:
         response = await client.delete(f"/api/job/{uuid4()}")
 
     # Assert
