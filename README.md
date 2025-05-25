@@ -62,7 +62,7 @@ This script will:
 
 * Apply migrations
 * Seed the database (admin + 10 jobs)
-* Start the development server at 0.0.0.0:8000
+* Start the development server at `0.0.0.0:8000`
 
 
 ## Seeded Admin Account
