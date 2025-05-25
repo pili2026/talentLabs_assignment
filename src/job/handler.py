@@ -1,11 +1,11 @@
 from uuid import UUID
 
 from asgiref.sync import async_to_sync
-from ninja import Router
+from ninja import Query, Router
 from ninja.errors import HttpError
 from ninja_jwt.authentication import JWTAuth
 
-from .schema import JobCreate, JobResponse, JobUpdate
+from .schema import JobCreate, JobListQuery, JobResponse, JobUpdate, PaginationResult
 from .service import JobService
 
 job_router = Router(auth=JWTAuth())
@@ -17,10 +17,10 @@ def create_job(request, create_job_schema: JobCreate):
     return async_to_sync(job_service.create_job)(create_job_schema)
 
 
-@job_router.get("/", response=list[JobResponse], summary="List all jobs")
-def list_job(request):
+@job_router.get("/", response=PaginationResult, summary="List all jobs")
+def list_job(request, query: JobListQuery = Query(...)):
     job_service: JobService = request.job_service
-    return async_to_sync(job_service.get_all_job)()
+    return async_to_sync(job_service.get_all_job)(query)
 
 
 @job_router.get("/{job_id}", response=JobResponse, summary="Get job by ID")

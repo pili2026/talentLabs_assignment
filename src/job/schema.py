@@ -1,4 +1,5 @@
 from datetime import date
+from enum import StrEnum
 from typing import Union
 from uuid import UUID
 
@@ -37,3 +38,34 @@ class JobResponse(JobBase):
     company_name: str
 
     model_config = ConfigDict(from_attributes=True)
+
+
+class JobSortField(StrEnum):
+    POSTING_DATE = "posting_date"
+    EXPIRATION_DATE = "expiration_date"
+
+
+class SortOrder(StrEnum):
+    ASC = "asc"
+    DESC = "desc"
+
+
+class JobListQuery(Schema):
+    page: int = 1
+    page_size: int = 10
+
+    search: str | None = None
+
+    status: JobStatusEnum | None = None
+    location: str | None = None
+    company_name: str | None = None
+
+    order_by: JobSortField | None = JobSortField.POSTING_DATE
+    sort_order: SortOrder | None = SortOrder.DESC
+
+
+class PaginationResult(Schema):
+    total: int
+    page: int
+    page_size: int
+    list: list[JobResponse]
