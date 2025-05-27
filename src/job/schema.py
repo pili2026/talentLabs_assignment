@@ -9,7 +9,7 @@ from pydantic import ConfigDict
 from .enum_type import JobStatusEnum
 
 
-class SalaryRangeObject(Schema):
+class SalaryRange(Schema):
     min: int | None = None
     max: int | None = None
 
@@ -18,7 +18,7 @@ class JobBase(Schema):
     title: str
     description: str
     location: str
-    salary_range: Union[str, SalaryRangeObject]
+    salary_range: Union[str, SalaryRange]
     posting_date: date
     expiration_date: date
     required_skills: list[str]
@@ -29,8 +29,17 @@ class JobCreate(JobBase):
     company_name: str
 
 
-class JobUpdate(JobBase):
-    pass
+class JobUpdate(Schema):
+    title: str | None = None
+    description: str | None = None
+    location: str | None = None
+    salary_range: Union[str, SalaryRange] | None = None
+    posting_date: date | None = None
+    expiration_date: date | None = None
+    required_skills: list[str] | None = None
+    status: JobStatusEnum | None = None
+
+    model_config = ConfigDict(extra="forbid")
 
 
 class JobResponse(JobBase):
@@ -59,6 +68,7 @@ class JobListQuery(Schema):
     status: JobStatusEnum | None = None
     location: str | None = None
     company_name: str | None = None
+    skills: list[str] | None = None
 
     order_by: JobSortField | None = JobSortField.POSTING_DATE
     sort_order: SortOrder | None = SortOrder.DESC

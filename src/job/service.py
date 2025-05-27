@@ -26,3 +26,7 @@ class JobService:
 
     async def delete_job(self, job_id: UUID) -> bool:
         return await self.job_repository.delete(job_id)
+
+    async def get_all_skill(self) -> list[str]:
+        skill_list: list[str] = await self.job_repository.get_all_skill()
+        return skill_list

@@ -40,6 +40,11 @@ class JobRepository:
                 | Q(description__icontains=query.search)
                 | Q(company_name__icontains=query.search)
             )
+        if query.skills:
+            skill_filters = Q()
+            for skill in query.skills:
+                skill_filters |= Q(required_skills__contains=[skill])
+            filters &= skill_filters
 
         qs = self.objects.filter(filters)
 
@@ -74,6 +79,20 @@ class JobRepository:
     async def delete(self, job_id: UUID) -> bool:
         deleted_count, _ = await self.objects.filter(id=job_id).adelete()
         return deleted_count > 0
+
+    async def get_all_skill(self) -> list[str]:
+        @sync_to_async
+        def extract_skills():
+            skills = self.objects.values_list("required_skills", flat=True)
+            unique_skills = set()
+
+            for skill_list in skills:
+                if isinstance(skill_list, list):
+                    unique_skills.update(skill_list)
+
+            return sorted(unique_skills)
+
+        return await extract_skills()
 
     async def _get_or_raise(self, job_id: UUID) -> JobDBModel:
         job = await sync_to_async(lambda: self.objects.filter(id=job_id).first())()

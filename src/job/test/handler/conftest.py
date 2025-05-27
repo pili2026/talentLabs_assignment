@@ -25,7 +25,7 @@ def mock_auth_user(mocker):
 
 
 @pytest.fixture
-def multiple_fake_jobs() -> list[JobResponse]:
+def fake_job_list() -> list[JobResponse]:
     now = datetime.now()
 
     return [

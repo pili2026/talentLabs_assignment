@@ -24,7 +24,7 @@ def fake_job_response(existing_job_uuid) -> JobResponse:
 
 
 @pytest.fixture
-def stub_job_create_data() -> JobCreate:
+def fake_job_create_data() -> JobCreate:
     return JobCreate(
         title="Full Stack Engineer",
         description="Build APIs",

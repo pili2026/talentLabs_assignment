@@ -6,7 +6,8 @@ from httpx import ASGITransport, AsyncClient
 
 from job.enum_type import JobStatusEnum
 from job.exception import NotFoundException
-from job.schema import JobCreate, JobUpdate, PaginationResult
+from job.schema import JobCreate, PaginationResult
+from job.test.utils.schema_extract import extract_job_update_fields
 
 """Positive test cases for job handler APIs"""
 
@@ -91,7 +92,7 @@ async def test_positive_update_job_api(mocker, fake_job_response, mock_auth_user
 
     # Arrange
     headers = {"Authorization": "Bearer faketoken"}
-    request_body = JobUpdate(**fake_job_response.model_dump()).model_dump(mode="json")
+    request_body = extract_job_update_fields(fake_job_response)
 
     # Act
     async with AsyncClient(transport=transport, base_url="http://test", headers=headers) as client:
@@ -205,7 +206,7 @@ async def test_negative_update_job_when_not_found(mocker, fake_job_response, moc
 
     # Arrange
     headers = {"Authorization": "Bearer faketoken"}
-    request_body = JobUpdate(**fake_job_response.model_dump()).model_dump(mode="json")
+    request_body = extract_job_update_fields(fake_job_response)
 
     # Act
     async with AsyncClient(transport=transport, base_url="http://test", headers=headers) as client:
@@ -238,10 +239,10 @@ async def test_negative_delete_job_when_not_found(mocker, mock_auth_user):
 
 
 @pytest.mark.asyncio
-async def test_list_jobs_by_search_engineer(mocker, multiple_fake_jobs, mock_auth_user):
+async def test_list_jobs_by_search_engineer(mocker, fake_job_list, mock_auth_user):
 
     # Mock
-    matched = [job for job in multiple_fake_jobs if "engineer" in job.title.lower()]
+    matched = [job for job in fake_job_list if "engineer" in job.title.lower()]
 
     mocker.patch(
         "job.repository.JobRepository.get_all",
@@ -264,9 +265,9 @@ async def test_list_jobs_by_search_engineer(mocker, multiple_fake_jobs, mock_aut
 
 
 @pytest.mark.asyncio
-async def test_list_jobs_by_status_active(mocker, multiple_fake_jobs, mock_auth_user):
+async def test_list_jobs_by_status_active(mocker, fake_job_list, mock_auth_user):
     # Mock
-    filtered = [job for job in multiple_fake_jobs if job.status == JobStatusEnum.ACTIVE]
+    filtered = [job for job in fake_job_list if job.status == JobStatusEnum.ACTIVE]
 
     mocker.patch(
         "job.repository.JobRepository.get_all",
@@ -289,13 +290,13 @@ async def test_list_jobs_by_status_active(mocker, multiple_fake_jobs, mock_auth_
 
 
 @pytest.mark.asyncio
-async def test_list_jobs_sorted_by_posting_date_asc(mocker, multiple_fake_jobs, mock_auth_user):
+async def test_list_jobs_sorted_by_posting_date_asc(mocker, fake_job_list, mock_auth_user):
     # Mock
-    sorted_list = sorted(multiple_fake_jobs, key=lambda j: j.posting_date)
+    sorted_job_list = sorted(fake_job_list, key=lambda j: j.posting_date)
 
     mocker.patch(
         "job.repository.JobRepository.get_all",
-        return_value=PaginationResult(total=len(sorted_list), page=1, page_size=10, list=sorted_list),
+        return_value=PaginationResult(total=len(sorted_job_list), page=1, page_size=10, list=sorted_job_list),
     )
 
     app = get_asgi_application()
@@ -314,3 +315,53 @@ async def test_list_jobs_sorted_by_posting_date_asc(mocker, multiple_fake_jobs, 
     jobs = response.json()["list"]
     post_dates = [job["posting_date"] for job in jobs]
     assert post_dates == sorted(post_dates)
+
+
+@pytest.mark.asyncio
+async def test_get_skill_list(mocker, mock_auth_user):
+    # Mock
+    expected_skill_list = ["vue", "python", "django"]
+    mocker.patch("job.repository.JobRepository.get_all_skill", return_value=expected_skill_list)
+
+    app = get_asgi_application()
+    transport = ASGITransport(app=app)
+
+    # Arrange
+    headers = {"Authorization": "Bearer faketoken"}
+
+    # Act
+    async with AsyncClient(transport=transport, base_url="http://test", headers=headers) as client:
+        response = await client.get("/api/job/skill_list")
+
+    # Assert
+    assert response.status_code == 200
+    assert sorted(response.json()) == sorted(expected_skill_list)
+
+
+@pytest.mark.asyncio
+async def test_list_job_by_skill_list(mocker, fake_job_list, mock_auth_user):
+    # Mock
+    filtered_skill_job_list = [
+        job for job in fake_job_list if "python" in job.required_skills or "vue" in job.required_skills
+    ]
+
+    mocker.patch(
+        "job.repository.JobRepository.get_all",
+        return_value=PaginationResult(
+            total=len(filtered_skill_job_list), page=1, page_size=10, list=filtered_skill_job_list
+        ),
+    )
+
+    app = get_asgi_application()
+    transport = ASGITransport(app=app)
+
+    # Arrange
+    headers = {"Authorization": "Bearer faketoken"}
+
+    # Act
+    async with AsyncClient(transport=transport, base_url="http://test", headers=headers) as client:
+        response = await client.get("/api/job/?skills=python&skills=vue")
+
+    # Assert
+    assert response.status_code == 200
+    assert all("python" in job["required_skills"] or "vue" in job["required_skills"] for job in response.json()["list"])

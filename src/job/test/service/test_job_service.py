@@ -7,26 +7,26 @@ from job.schema import JobCreate, JobResponse
 
 @pytest.mark.asyncio
 async def test_positive_create_job_returns_job_response(
-    existing_job_uuid, job_service, mock_repository, stub_job_create_data
+    existing_job_uuid, job_service, mock_repository, fake_job_create_data
 ):
     # Mock
-    mock_repository.create.return_value = JobResponse(id=existing_job_uuid, **stub_job_create_data.model_dump())
+    mock_repository.create.return_value = JobResponse(id=existing_job_uuid, **fake_job_create_data.model_dump())
 
     # Act
-    result = await job_service.create_job(stub_job_create_data)
+    result = await job_service.create_job(fake_job_create_data)
 
     # Assert
     assert isinstance(result, JobResponse)
-    assert result.title == stub_job_create_data.title
+    assert result.title == fake_job_create_data.title
     mock_repository.create.assert_awaited_once()
 
 
 @pytest.mark.asyncio
 async def test_positive_get_job_returns_expected_result(
-    existing_job_uuid, job_service, mock_repository, stub_job_create_data
+    existing_job_uuid, job_service, mock_repository, fake_job_create_data
 ):
     # Mock
-    expected = JobResponse(id=existing_job_uuid, **stub_job_create_data.dict())
+    expected = JobResponse(id=existing_job_uuid, **fake_job_create_data.dict())
     mock_repository.get_by_id.return_value = expected
 
     # Act
