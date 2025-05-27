@@ -1,4 +1,4 @@
-from job.schema import JobUpdate
+from job.schema.job import JobUpdate
 
 
 def extract_job_update_fields(job_response) -> dict:

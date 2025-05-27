@@ -6,7 +6,7 @@ from django.db.models import Q
 from django.db.models.manager import Manager
 
 from job.exception import NotFoundException
-from job.schema import JobCreate, JobListQuery, JobResponse, JobUpdate, PaginationResult, SortOrder
+from job.schema.job import JobCreate, JobListQuery, JobResponse, JobUpdate, PaginationResult, SortOrder
 
 from .model import JobDBModel
 

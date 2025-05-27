@@ -5,7 +5,7 @@ from ninja import Query, Router
 from ninja.errors import HttpError
 from ninja_jwt.authentication import JWTAuth
 
-from .schema import JobCreate, JobListQuery, JobResponse, JobUpdate, PaginationResult
+from .schema.job import JobCreate, JobListQuery, JobResponse, JobUpdate, PaginationResult
 from .service import JobService
 
 job_router = Router(auth=JWTAuth(), tags=["Job Management"])

@@ -1,7 +1,7 @@
 from uuid import UUID
 
 from .repository import JobRepository
-from .schema import JobCreate, JobListQuery, JobResponse, JobUpdate, PaginationResult
+from .schema.job import JobCreate, JobListQuery, JobResponse, JobUpdate, PaginationResult
 
 
 class JobService:

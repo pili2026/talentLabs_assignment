@@ -4,7 +4,7 @@ from uuid import UUID, uuid4
 import pytest
 
 from job.enum_type import JobStatusEnum
-from job.schema import JobCreate, JobResponse
+from job.schema.job import JobCreate, JobResponse
 
 
 @pytest.fixture

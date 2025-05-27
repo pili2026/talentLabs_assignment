@@ -1,4 +1,4 @@
-from authentication.controller import PrivateAuthController, PublicAuthController
+from authentication.handler import PrivateAuthController, PublicAuthController
 from django.contrib import admin
 from django.http import JsonResponse
 from django.urls import path

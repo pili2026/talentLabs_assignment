@@ -2,7 +2,7 @@ import uuid
 
 from django.db import models
 
-from job.schema import JobResponse
+from job.schema.job import JobResponse
 
 from .enum_type import JobStatusEnum
 
@@ -12,7 +12,7 @@ class JobDBModel(models.Model):
     title = models.CharField(max_length=255)
     description = models.TextField()
     location = models.CharField(max_length=255, db_index=True)
-    salary_range = models.JSONField()
+    salary_range = models.JSONField(default=dict)
     company_name = models.CharField(max_length=255)
     posting_date = models.DateField(db_index=True)
     expiration_date = models.DateField(db_index=True)

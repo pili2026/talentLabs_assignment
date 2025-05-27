@@ -1,24 +1,19 @@
 from datetime import date
 from enum import StrEnum
-from typing import Union
 from uuid import UUID
 
 from ninja import Schema
 from pydantic import ConfigDict
 
-from .enum_type import JobStatusEnum
-
-
-class SalaryRange(Schema):
-    min: int | None = None
-    max: int | None = None
+from job.enum_type import JobStatusEnum
+from job.schema.salary import SalaryRange
 
 
 class JobBase(Schema):
     title: str
     description: str
     location: str
-    salary_range: Union[str, SalaryRange]
+    salary_range: SalaryRange
     posting_date: date
     expiration_date: date
     required_skills: list[str]
@@ -33,7 +28,7 @@ class JobUpdate(Schema):
     title: str | None = None
     description: str | None = None
     location: str | None = None
-    salary_range: Union[str, SalaryRange] | None = None
+    salary_range: SalaryRange | None = None
     posting_date: date | None = None
     expiration_date: date | None = None
     required_skills: list[str] | None = None

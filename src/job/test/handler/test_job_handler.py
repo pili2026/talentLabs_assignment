@@ -6,7 +6,7 @@ from httpx import ASGITransport, AsyncClient
 
 from job.enum_type import JobStatusEnum
 from job.exception import NotFoundException
-from job.schema import JobCreate, PaginationResult
+from job.schema.job import JobCreate, PaginationResult
 from job.test.utils.schema_extract import extract_job_update_fields
 
 """Positive test cases for job handler APIs"""

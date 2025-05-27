@@ -65,7 +65,6 @@ class Command(BaseCommand):
                 "TalentLabs Inc",
                 "WriteWell Co",
             ]
-            salary_ranges = ["60k-80k", "70k-90k", "80k-100k", "90k-110k", "100k-120k", "120k-150k"]
             locations = ["Taipei", "Kaohsiung", "Tainan", "Hsinchu", "Taichung", "Remote"]
             skill_pool = [
                 "Python",
@@ -81,17 +80,25 @@ class Command(BaseCommand):
             ]
 
             today = date.today()
+
             for _ in range(10):
                 posting_date = today - timedelta(days=random.randint(1, 30))
                 expiration_date = posting_date + timedelta(days=random.randint(10, 60))
                 required_skills = random.sample(skill_pool, k=random.randint(1, 3))
+
+                # Structured salary_range
+                salary_min = random.randint(60000, 100000)
+                salary_max = random.randint(salary_min + 10000, salary_min + 40000)
+                if salary_min >= salary_max:
+                    salary_max = salary_min + 10000
+                salary_range = {"min": salary_min, "max": salary_max}
 
                 JobDBModel.objects.create(
                     id=uuid4(),
                     title=random.choice(job_titles),
                     description=random.choice(descriptions),
                     location=random.choice(locations),
-                    salary_range=random.choice(salary_ranges),
+                    salary_range=salary_range,
                     posting_date=posting_date,
                     expiration_date=expiration_date,
                     required_skills=required_skills,

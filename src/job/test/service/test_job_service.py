@@ -2,7 +2,7 @@ import pytest
 from pydantic import ValidationError
 
 from job.exception import NotFoundException
-from job.schema import JobCreate, JobResponse
+from job.schema.job import JobCreate, JobResponse
 
 
 @pytest.mark.asyncio
