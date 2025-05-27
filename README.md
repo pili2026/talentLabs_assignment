@@ -12,7 +12,6 @@ It supports job management with search, filtering, pagination, and role-based au
 - **Ninja JWT** (authentication)
 - **PostgreSQL** (with TimescaleDB)
 - **Pydantic v2**
-- **Dynaconf** (configuration loader)
 - **Pytest** for testing
 - **Docker + Docker Compose** for deployment
 
@@ -110,6 +109,7 @@ This token can be used to directly test authenticated endpoints without logging 
 OpenAPI docs available at:
 
 [http://localhost:8000/api/docs](http://localhost:8000/api/docs)
+[http://0.0.0.0:8000/api/docs](http://0.0.0.0:8000/api/docs)
 
 ### How to Use Auth in Swagger UI
 
@@ -148,7 +148,7 @@ pytest -v --disable-warnings
 │   └── web_api_server_entrypoint.sh            # Docker entrypoint
 │
 ├── res/                         # Configuration files
-│   ├── config.yml               # Local settings (dynaconf)
+│   ├── config.yml               # Local settings
 │   └── config.docker.yml        # Docker-specific overrides
 │
 ├── docker-compose.yml           # Compose config for API + DB
@@ -185,11 +185,10 @@ pytest -v --disable-warnings
 * Follows Clean Architecture principles (modular, testable)
 * Avoids fat views by layering responsibilities
 * Makes full use of Pydantic 2.0 features (field validation, `extra="forbid"`)
-* Configuration decoupled using `dynaconf` for easy Docker overrides
+* Configuration decoupled using `config.yml` for easy Docker overrides
 * Emphasizes developer experience: quick setup, live docs, seeded tokens, and testable layers
 
 ## License
 ```
 MIT – for assignment evaluation only.
-
 ```
