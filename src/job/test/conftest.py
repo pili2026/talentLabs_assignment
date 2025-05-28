@@ -5,6 +5,7 @@ import pytest
 
 from job.enum_type import JobStatusEnum
 from job.schema.job import JobCreate, JobResponse
+from job.schema.salary import SalaryRange
 
 
 @pytest.fixture
@@ -14,7 +15,7 @@ def fake_job_response(existing_job_uuid) -> JobResponse:
         title="Engineer",
         description="Build APIs",
         location="Taipei",
-        salary_range="80k-100k",
+        salary_range=SalaryRange(min=80000, max=100000),
         company_name="Test Co",
         posting_date=date(2024, 1, 1),
         expiration_date=date(2024, 12, 31),
@@ -29,7 +30,7 @@ def fake_job_create_data() -> JobCreate:
         title="Full Stack Engineer",
         description="Build APIs",
         location="Taipei",
-        salary_range="Negotiable",
+        salary_range=SalaryRange(min=80000, max=100000),
         company_name="talentlabs",
         posting_date=date(2024, 1, 1),
         expiration_date=date(2024, 12, 31),
@@ -44,7 +45,7 @@ def fake_job_update_data() -> JobCreate:
         title="Updated Title",
         description="Updated Description",
         location="Remote",
-        salary_range="100k-150k",
+        salary_range=SalaryRange(min=1000000, max=1500000),
         company_name="UpdatedCorp",
         posting_date=date(2024, 2, 1),
         expiration_date=date(2024, 12, 31),

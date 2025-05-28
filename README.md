@@ -139,6 +139,64 @@ Or with verbose output:
 pytest -v --disable-warnings
 ```
 
+### Test Coverage Report
+
+To run tests with a code coverage summary:
+
+```bash
+pytest --cov=job --cov-config=.coveragerc --cov-report=term --cov-report=html
+```
+
+* This will show a terminal summary of test coverage
+* A full HTML report will be generated at `htmlcov/index.html`
+
+You can open it in your browser with:
+
+```bash
+open htmlcov/index.html  # macOS
+# or
+xdg-open htmlcov/index.html  # Linux
+```
+
+#### Sample Output:
+
+```
+Name                    Stmts   Miss  Cover
+-------------------------------------------
+src/job/repository.py      67      9    87%
+src/job/model.py           21      2    90%
+TOTAL                     236     16    93%
+```
+
+> To achieve 100% coverage, be sure to test all conditional branches and exception cases in repository methods.
+
+
+### .coveragerc Configuration
+
+The `.coveragerc` file helps exclude boilerplate and test-only code from coverage calculations:
+
+```ini
+[run]
+omit =
+    */__init__.py
+    */migrations/*
+    */test/*
+    manage.py
+    */asgi.py
+    */wsgi.py
+    */settings.py
+
+[report]
+exclude_lines =
+    pragma: no cover
+    if __name__ == .__main__.:
+    raise NotImplementedError
+    except ImportError
+
+show_missing = true
+skip_covered = true
+```
+
 ## Project Structure
 
 ```text
@@ -187,6 +245,54 @@ pytest -v --disable-warnings
 * Makes full use of Pydantic 2.0 features (field validation, `extra="forbid"`)
 * Configuration decoupled using `config.yml` for easy Docker overrides
 * Emphasizes developer experience: quick setup, live docs, seeded tokens, and testable layers
+
+
+## Design Decisions & Tradeoffs
+
+Several assumptions were made to handle under-specified behaviors in the original prompt.  
+Where requirements were vague or incomplete, reasonable defaults and tradeoffs were applied to ensure a robust and testable backend implementation.
+
+Key examples include:
+
+### 1. **Salary Range Type**
+The assignment allowed `salary_range` to be a `string or object`. To handle both cases:
+- Defined a Pydantic `SalaryRange` object with `min` and `max`
+- Allowed string fallback (e.g., `"90k-110k"`) during parsing and DB storage
+- **Tradeoff**: sacrificed some schema strictness for flexibility and backward compatibility
+
+### 2. **Job Status Enum Validation**
+- Used a `StrEnum` (`JobStatusEnum`) to constrain allowed values (`active`, `expired`, `scheduled`)
+- Added request-time schema validation to prevent invalid input
+- **Tradeoff**: strict typing may lead to 422 errors if clients use wrong casing
+
+### 3. **Search & Filter Logic**
+- `search` field is applied to `title`, `description`, and `company_name`
+- `skills` filter uses `__contains` for partial array match
+- **Tradeoff**: easier to implement and test, but suboptimal for large-scale datasets (e.g., no full-text index)
+
+### 4. **Immutable Company Name**
+- Enforced rule that `company_name` cannot be updated after creation
+- Implemented via service-layer validation logic
+- **Tradeoff**: avoids side effects and keeps business rules outside schema layer
+
+### 5. **JWT Authentication Strategy**
+- Used `django-ninja-jwt` for seamless integration with Ninja and async handlers
+- Automatically seeded an admin user and printed JWT token for quick testing
+- **Tradeoff**: no token refresh support in this prototype (would add in production)
+
+### 6. **Mock-Based Repository Testing**
+- Repository methods are tested using `pytest-mock` and `AsyncMock`, rather than hitting the DB
+- **Tradeoff**: test coverage is higher and faster, though full ORM behavior is assumed, not verified
+
+### 7. **Three-Layer Architecture: Handler → Service → Repository**
+The app uses a layered design:
+- **Handler**: API routes and schema validation
+- **Service**: business rules (e.g., immutable fields)
+- **Repository**: DB access and query abstraction
+
+This structure improves testability, clarity, and modularity—at the cost of some initial complexity, which is justified for scalable projects.
+
+> These decisions aim to balance clarity, developer experience, and testability under real-world constraints.
 
 ## License
 ```
