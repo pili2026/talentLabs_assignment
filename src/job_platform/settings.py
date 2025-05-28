@@ -103,7 +103,7 @@ DATABASES = {
         "USER": config["TIMESCALEDB_DB_USER"],
         "PASSWORD": config["TIMESCALEDB_DB_PASSWD"],
         "HOST": config["TIMESCALEDB_DB_HOST"],
-        "PORT": 5432,
+        "PORT": config.get("TIMESCALEDB_DB_PORT", 5432),
     }
 }
 

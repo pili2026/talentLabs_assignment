@@ -91,7 +91,9 @@ Password: admin123
 ```
 
 An access token is also printed in the terminal for quick testing.
+
 ### Auto-generated JWT Token
+
 When the app is seeded, an access token is automatically generated and printed to the console.
 
 Example output:
@@ -139,6 +141,28 @@ Or with verbose output:
 pytest -v --disable-warnings
 ```
 
+### Integration Testing with Docker
+
+This project includes a full integration test environment using Docker and TimescaleDB:
+
+```bash
+./run_tests.sh
+```
+
+This script will:
+
+- Start the TimescaleDB test container (`docker-compose.test.yml`)
+- Wait until the database is fully ready (not just TCP ready)
+- Run Django migrations
+- Execute all tests using `pytest`
+- Automatically clean up the test database container and volume
+
+You can run specific test functions with:
+
+```bash
+./bin/run_integration_test.sh -k test_job_db_integration
+```
+
 ### Test Coverage Report
 
 To run tests with a code coverage summary:
@@ -170,7 +194,6 @@ TOTAL                     236     16    93%
 
 > To achieve 100% coverage, be sure to test all conditional branches and exception cases in repository methods.
 
-
 ### .coveragerc Configuration
 
 The `.coveragerc` file helps exclude boilerplate and test-only code from coverage calculations:
@@ -199,17 +222,20 @@ skip_covered = true
 
 ## Project Structure
 
-```text
+```
 .
-├── bin/                           # Shell scripts
+├── bin/                                        # Shell scripts
+|   ├── run_integration_test.sh                 # Shell script to run integration tests
 │   ├── run_api_servcer_local_entrypoint.sh     # Local dev script
 │   └── web_api_server_entrypoint.sh            # Docker entrypoint
 │
 ├── res/                         # Configuration files
 │   ├── config.yml               # Local settings
+|   ├── config.test.yml          # Integration test settings
 │   └── config.docker.yml        # Docker-specific overrides
 │
 ├── docker-compose.yml           # Compose config for API + DB
+├── docker-compose.test.yml      # Compose config for integration testing
 ├── Dockerfile                   # Django API Docker image
 ├── manage.py                    # Django CLI
 ├── requirements.txt             # Python dependencies
@@ -246,7 +272,6 @@ skip_covered = true
 * Configuration decoupled using `config.yml` for easy Docker overrides
 * Emphasizes developer experience: quick setup, live docs, seeded tokens, and testable layers
 
-
 ## Design Decisions & Tradeoffs
 
 Several assumptions were made to handle under-specified behaviors in the original prompt.  
@@ -254,38 +279,47 @@ Where requirements were vague or incomplete, reasonable defaults and tradeoffs w
 
 Key examples include:
 
-### 1. **Salary Range Type**
+### 1. Salary Range Type
+
 The assignment allowed `salary_range` to be a `string or object`. To handle both cases:
+
 - Defined a Pydantic `SalaryRange` object with `min` and `max`
 - Allowed string fallback (e.g., `"90k-110k"`) during parsing and DB storage
-- **Tradeoff**: sacrificed some schema strictness for flexibility and backward compatibility
+- Tradeoff: sacrificed some schema strictness for flexibility and backward compatibility
 
-### 2. **Job Status Enum Validation**
+### 2. Job Status Enum Validation
+
 - Used a `StrEnum` (`JobStatusEnum`) to constrain allowed values (`active`, `expired`, `scheduled`)
 - Added request-time schema validation to prevent invalid input
-- **Tradeoff**: strict typing may lead to 422 errors if clients use wrong casing
+- Tradeoff: strict typing may lead to 422 errors if clients use wrong casing
 
-### 3. **Search & Filter Logic**
+### 3. Search & Filter Logic
+
 - `search` field is applied to `title`, `description`, and `company_name`
 - `skills` filter uses `__contains` for partial array match
-- **Tradeoff**: easier to implement and test, but suboptimal for large-scale datasets (e.g., no full-text index)
+- Tradeoff: easier to implement and test, but suboptimal for large-scale datasets (e.g., no full-text index)
 
-### 4. **Immutable Company Name**
+### 4. Immutable Company Name
+
 - Enforced rule that `company_name` cannot be updated after creation
 - Implemented via service-layer validation logic
-- **Tradeoff**: avoids side effects and keeps business rules outside schema layer
+- Tradeoff: avoids side effects and keeps business rules outside schema layer
 
-### 5. **JWT Authentication Strategy**
+### 5. JWT Authentication Strategy
+
 - Used `django-ninja-jwt` for seamless integration with Ninja and async handlers
 - Automatically seeded an admin user and printed JWT token for quick testing
-- **Tradeoff**: no token refresh support in this prototype (would add in production)
+- Tradeoff: no token refresh support in this prototype (would add in production)
 
-### 6. **Mock-Based Repository Testing**
+### 6. Mock-Based Repository Testing
+
 - Repository methods are tested using `pytest-mock` and `AsyncMock`, rather than hitting the DB
-- **Tradeoff**: test coverage is higher and faster, though full ORM behavior is assumed, not verified
+- Tradeoff: test coverage is higher and faster, though full ORM behavior is assumed, not verified
 
-### 7. **Three-Layer Architecture: Handler → Service → Repository**
+### 7. Three-Layer Architecture: Handler → Service → Repository
+
 The app uses a layered design:
+
 - **Handler**: API routes and schema validation
 - **Service**: business rules (e.g., immutable fields)
 - **Repository**: DB access and query abstraction
@@ -295,6 +329,7 @@ This structure improves testability, clarity, and modularity—at the cost of so
 > These decisions aim to balance clarity, developer experience, and testability under real-world constraints.
 
 ## License
+
 ```
 MIT – for assignment evaluation only.
 ```

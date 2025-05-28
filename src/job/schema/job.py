@@ -19,6 +19,8 @@ class JobBase(Schema):
     required_skills: list[str]
     status: JobStatusEnum
 
+    model_config = ConfigDict(populate_by_name=True)
+
 
 class JobCreate(JobBase):
     company_name: str
@@ -68,9 +70,13 @@ class JobListQuery(Schema):
     order_by: JobSortField | None = JobSortField.POSTING_DATE
     sort_order: SortOrder | None = SortOrder.DESC
 
+    model_config = ConfigDict(extra="forbid")
+
 
 class PaginationResult(Schema):
     total: int
     page: int
     page_size: int
     list: list[JobResponse]
+
+    model_config = ConfigDict(from_attributes=True)

@@ -10,6 +10,13 @@ repos:
       - id: run-pytest
         name: Run unit tests
         entry: pytest
-        language: system  # 用系統的 Python，不用包 virtualenv
+        language: system
+        types: [python]
+        pass_filenames: false
+
+      - id: run-integration-tests
+        name: Run integration tests
+        entry: ./bin/run_api_integration_test.sh
+        language: script
         types: [python]
         pass_filenames: false

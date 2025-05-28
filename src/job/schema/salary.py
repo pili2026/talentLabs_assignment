@@ -1,8 +1,10 @@
 from ninja import Schema
-from pydantic import field_validator
+from pydantic import ConfigDict, field_validator
 
 
 class SalaryRange(Schema):
+    model_config = ConfigDict(populate_by_name=True)
+
     min: int | None = None
     max: int | None = None
 
