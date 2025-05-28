@@ -141,9 +141,9 @@ Or with verbose output:
 pytest -v --disable-warnings
 ```
 
-### Integration Testing with Docker
+### API Integration Testing with Docker
 
-This project includes a full integration test environment using Docker and TimescaleDB:
+This project includes a full api integration test environment using Docker and TimescaleDB:
 
 ```bash
 ./run_tests.sh
@@ -160,7 +160,7 @@ This script will:
 You can run specific test functions with:
 
 ```bash
-./bin/run_integration_test.sh -k test_job_db_integration
+./bin/run_api_integration_test.sh -k test_job_api_integration
 ```
 
 ### Test Coverage Report
@@ -225,13 +225,13 @@ skip_covered = true
 ```
 .
 ├── bin/                                        # Shell scripts
-|   ├── run_integration_test.sh                 # Shell script to run integration tests
+|   ├── run_api_integration_test.sh             # Shell script to run api integration tests
 │   ├── run_api_servcer_local_entrypoint.sh     # Local dev script
 │   └── web_api_server_entrypoint.sh            # Docker entrypoint
 │
 ├── res/                         # Configuration files
 │   ├── config.yml               # Local settings
-|   ├── config.test.yml          # Integration test settings
+|   ├── config.test.yml          # API Integration test settings
 │   └── config.docker.yml        # Docker-specific overrides
 │
 ├── docker-compose.yml           # Compose config for API + DB
