@@ -21,7 +21,7 @@ async def test_positive_create_job_api(mocker, fake_job_response, mock_auth_user
     transport = ASGITransport(app=app)
 
     # Arrange
-    request_body = JobCreate(**fake_job_response.model_dump()).model_dump(mode="json")
+    request_body = JobCreate(**fake_job_response.model_dump(mode="json", exclude={"id"})).model_dump(mode="json")
     headers = {"Authorization": "Bearer faketoken"}
 
     # Act

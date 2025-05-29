@@ -21,6 +21,6 @@ until python manage.py migrate --settings=job_platform.settings > /dev/null 2>&1
 done
 
 echo "Database is ready. Running tests..."
-pytest --reuse-db "$@"
+pytest src/job/test/api_integration --reuse-db "$@"
 
 docker compose -f docker-compose.test.yml down -v

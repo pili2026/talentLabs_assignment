@@ -19,7 +19,7 @@ class JobBase(Schema):
     required_skills: list[str]
     status: JobStatusEnum
 
-    model_config = ConfigDict(populate_by_name=True)
+    model_config = ConfigDict(populate_by_name=True, extra="forbid")
 
 
 class JobCreate(JobBase):
