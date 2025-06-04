@@ -1,6 +1,6 @@
-# TalentLabs Backend Assignment
+# job_platform Backend Assignment
 
-This is the backend implementation of the TalentLabs Full Stack Assignment.  
+This is the backend implementation of the job_platform Full Stack Assignment.  
 It is a Job Platform API built using **Django**, **Django Ninja**, and **JWT authentication**.  
 It supports job management with search, filtering, pagination, and role-based authentication.
 

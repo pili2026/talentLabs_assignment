@@ -12,7 +12,7 @@ attempt=1
 until python manage.py migrate --settings=job_platform.settings > /dev/null 2>&1; do
   if [ $attempt -ge $MAX_ATTEMPTS ]; then
     echo "Error: Django could not connect to DB or migrate within timeout."
-    docker logs talentlabs_timescaledb_test
+    docker logs job_platform_timescaledb_test
     exit 1
   fi
   echo "  Attempt $attempt/$MAX_ATTEMPTS: Waiting for successful migrate..."

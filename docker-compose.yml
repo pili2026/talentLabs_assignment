@@ -3,7 +3,7 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
-    container_name: talentlabs_web
+    container_name: job_platform_web
     volumes:
       - .:/app
     ports:
@@ -17,16 +17,16 @@ services:
       DB_PORT: 5432
       DB_USER: admin
       DB_PASSWORD: admin
-      DB_NAME: talentlabs
-      DATABASE_URL: postgres://admin:admin@timescaledb:5432/talentlabs
+      DB_NAME: job_platform
+      DATABASE_URL: postgres://admin:admin@timescaledb:5432/job_platform
     networks:
-      - talentlabs_network
+      - job_platform_network
 
   timescaledb:
-    container_name: talentlabs_timescaledb
+    container_name: job_platform_timescaledb
     image: timescale/timescaledb:2.19.2-pg15
     environment:
-      POSTGRES_DB: talentlabs
+      POSTGRES_DB: job_platform
       POSTGRES_USER: admin
       POSTGRES_PASSWORD: admin
       POSTGRES_CONFIG_MAX_LOCKS_PER_TRANSACTION: "128"
@@ -35,15 +35,15 @@ services:
     ports:
       - "5432:5432"
     networks:
-      - talentlabs_network
+      - job_platform_network
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U admin -d talentlabs && psql -U admin -d talentlabs -c 'SELECT 1'"]
+      test: ["CMD-SHELL", "pg_isready -U admin -d job_platform && psql -U admin -d job_platform -c 'SELECT 1'"]
       interval: 1s
       timeout: 5s
       retries: 100
       start_period: 10s
 
 networks:
-  talentlabs_network:
-    name: talentlabs_network
+  job_platform_network:
+    name: job_platform_network
     driver: bridge

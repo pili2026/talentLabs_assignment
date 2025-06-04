@@ -62,7 +62,7 @@ class Command(BaseCommand):
                 "AI Lab",
                 "Designify Studio",
                 "CodeCraft",
-                "TalentLabs Inc",
+                "job_platform Inc",
                 "WriteWell Co",
             ]
             locations = ["Taipei", "Kaohsiung", "Tainan", "Hsinchu", "Taichung", "Remote"]

@@ -1,9 +1,9 @@
 services:
   timescaledb_test:
-    container_name: talentlabs_timescaledb_test
+    container_name: job_platform_timescaledb_test
     image: timescale/timescaledb:2.19.2-pg15
     environment:
-      POSTGRES_DB: talentlabs_test
+      POSTGRES_DB: job_platform_test
       POSTGRES_USER: admin
       POSTGRES_PASSWORD: admin
     ports:
@@ -11,7 +11,7 @@ services:
     volumes:
       - test_timescaledb_data:/var/lib/postgresql/data
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U admin -d talentlabs_test && psql -U admin -d talentlabs_test -c 'SELECT 1'"]
+      test: ["CMD-SHELL", "pg_isready -U admin -d job_platform_test && psql -U admin -d job_platform_test -c 'SELECT 1'"]
       interval: 2s
       timeout: 5s
       retries: 30
